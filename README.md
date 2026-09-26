@@ -17,6 +17,8 @@ npm run build:offline
 
 **部署到网站：**构建完成后上传 `dist/` **里面的所有内容**到静态站点目录（例如 `earth-atlas/`），无需运行本地服务，也不会占用端口。本仓库会在每次推送 `main` 后自动构建并发布 GitHub Pages。
 
+Cloudflare Workers Builds 使用 `npm run build` 构建，部署命令使用 `npx wrangler deploy`。根目录的 `wrangler.jsonc` 将 Worker 配置为静态资源站点，并指向 Vite 生成的 `dist/`。
+
 ```bash
 npm run build
 ```
