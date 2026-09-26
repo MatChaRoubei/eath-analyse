@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071522" />
+    <meta name="description" content="交互式地球数据地图：按世界银行指标和自定义门槛探索各国。" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071522'/%3E%3Ccircle cx='32' cy='32' r='23' fill='none' stroke='%237be2ca' stroke-width='3'/%3E%3Cpath d='M12 32h40M32 9c-8 6-12 14-12 23s4 17 12 23M32 9c8 6 12 14 12 23s-4 17-12 23' fill='none' stroke='%237be2ca' stroke-width='2'/%3E%3C/svg%3E" />
+    <title>地球数据观测站</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">◉</span><span>地球数据观测站</span></div>
+        <div class="topbar-right"><span class="live-dot"></span><span id="update-label">正在连接数据</span><details class="about-details"><summary aria-label="数据与地图说明" title="数据与地图说明">ⓘ</summary><div class="about-popover"><strong>数据与地图</strong><p>指标来自世界银行；“最新值”可能对应不同年份。筛选门槛用于探索，不代表官方收入分类。缺失数据不补填。</p><p>国界来自 Natural Earth，行政区来自 geoBoundaries / © OpenStreetMap contributors（ODbL）。边界精度不等于统计数据精度。面向公众发布地图前，请核对官方标准地图及审图要求。</p><a href="https://data.worldbank.org/" target="_blank" rel="noreferrer">世界银行 ↗</a> · <a href="https://www.geoboundaries.org/" target="_blank" rel="noreferrer">geoBoundaries ↗</a> · <a href="data/SOURCES.md" target="_blank" rel="noreferrer">来源与许可 ↗</a> · <a href="https://bzdt.tianditu.gov.cn/" target="_blank" rel="noreferrer">标准地图 ↗</a></div></details></div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar">
+          <h1 class="sr-only">地球数据观测站</h1>
+
+          <div class="section-heading first-heading"><span>快速提问</span></div>
+          <div id="preset-list" class="preset-list"></div>
+
+          <div class="year-panel">
+            <label for="year-select">数据年份</label>
+            <select id="year-select" aria-label="数据年份"></select>
+          </div>
+
+          <div class="section-heading"><span>指标</span><span id="metric-count">11 项</span></div>
+          <div id="metric-list" class="metric-list"></div>
+
+          <div class="threshold-panel">
+            <div class="section-heading"><span>筛选条件</span><span class="small-hint">自定义门槛</span></div>
+            <div class="condition-row">
+              <div class="operator-switch" role="group" aria-label="筛选方向">
+                <button id="op-above" class="active" type="button" title="大于或等于">≥</button>
+                <button id="op-below" type="button" title="小于或等于">≤</button>
+              </div>
+              <div class="value-input-wrap"><input id="threshold-input" type="number" aria-label="筛选门槛" /><span id="threshold-unit"></span></div>
+            </div>
+            <input id="threshold-range" class="range" type="range" aria-label="调整筛选门槛" />
+            <div class="range-labels"><span id="range-min"></span><span id="range-max"></span></div>
+          </div>
+
+          <div class="secondary-panel">
+            <label class="secondary-toggle"><input id="secondary-enabled" type="checkbox" /><span>同时满足第二个条件</span></label>
+            <div id="secondary-controls" hidden>
+              <select id="secondary-metric" aria-label="第二个指标"></select>
+              <div class="condition-row secondary-condition">
+                <select id="secondary-op" aria-label="第二个条件方向"><option value="above">≥ 至少</option><option value="below">≤ 至多</option></select>
+                <div class="value-input-wrap"><input id="secondary-threshold" type="number" aria-label="第二个条件门槛" /><span id="secondary-unit"></span></div>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+
+        <section class="globe-stage" aria-label="可交互的地球数据地图">
+          <div class="stage-grid"></div>
+          <div class="globe-glow"></div>
+          <div id="globe"></div>
+          <div class="stage-top">
+            <div class="stage-label"><span class="crosshair">⊕</span> <span id="stage-metric">人均 GDP</span></div>
+            <div class="stage-controls">
+              <button id="detail-map-btn" type="button" aria-label="加载精细国界" title="加载精细国界">▧</button>
+              <button id="rotate-btn" type="button" aria-label="暂停自动旋转" title="暂停自动旋转">Ⅱ</button>
+              <button id="zoom-in" type="button" aria-label="放大" title="放大">＋</button>
+              <button id="zoom-out" type="button" aria-label="缩小" title="缩小">－</button>
+              <button id="reset-view" type="button" aria-label="重置视角" title="重置视角">⌖</button>
+            </div>
+          </div>
+          <div id="loading" class="loading"><div class="spinner"></div><span>正在加载地球与数据…</span></div>
+          <div id="globe-tooltip" class="globe-tooltip" hidden></div>
+          <div class="stage-bottom"><span class="legend-dot match"></span><span>符合全部条件</span><span class="legend-dot other"></span><span>不符合 / 暂无数据</span><span id="map-resolution">标准国界</span><span class="stage-bottom-tip">拖动旋转 · 滚轮缩放</span></div>
+        </section>
+
+        <aside class="insights">
+          <h2 id="insight-title">人均 GDP</h2>
+          <p id="insight-desc" class="insight-desc"></p>
+          <div class="stat-block"><div class="stat-number" id="match-count">—</div><div class="stat-copy">个国家或地区符合条件<br /><span id="coverage">正在加载数据</span></div></div>
+
+          <div class="search-wrap"><span>⌕</span><input id="country-search" type="search" placeholder="搜索国家或地区" aria-label="搜索国家或地区" /></div>
+          <div class="list-head"><span>国家 / 地区 · <span id="list-unit">美元</span></span><button id="export-csv" type="button" title="导出全部符合条件的地区" disabled>↓ CSV</button></div>
+          <div id="export-result" class="export-result" hidden><a id="export-download" download>保存 CSV</a><button id="copy-csv" type="button">复制 CSV</button><span id="export-feedback" role="status"></span></div>
+          <div id="country-list" class="country-list"><div class="list-empty">正在获取数据…</div></div>
+
+          <div id="compare-panel" class="compare-panel" hidden>
+            <div class="section-heading"><span>地区对比</span><button id="compare-clear" type="button">清空</button></div>
+            <div id="compare-list"></div>
+          </div>
+
+          <div id="detail-card" class="detail-card" hidden>
+            <button id="detail-close" class="detail-close" type="button" aria-label="关闭详情">×</button>
+            <h3 id="detail-name"></h3>
+            <div id="detail-value" class="detail-value"></div>
+            <div id="detail-meta" class="detail-meta"></div>
+            <div class="spark-title">历年变化 <span id="spark-years"></span></div>
+            <div id="sparkline" class="sparkline"></div>
+            <button id="compare-add" class="compare-add" type="button">＋ 加入对比</button>
+            <button id="admin-open" class="admin-open" type="button">▦ 查看行政区</button>
+            <div id="admin-panel" class="admin-panel" hidden>
+              <div class="admin-levels"><button id="admin-level-1" type="button">省 / 州</button><button id="admin-level-2" type="button">市 / 县</button></div>
+              <div class="admin-navigation"><button id="admin-back" type="button" aria-label="返回省州列表" title="返回省州列表" hidden>←</button><span id="admin-breadcrumb"></span></div>
+              <input id="admin-search" type="search" placeholder="搜索当前行政区" aria-label="搜索当前行政区" />
+              <div id="admin-status" class="admin-status" role="status"></div>
+              <div id="admin-list" class="admin-list"></div>
+              <button id="admin-retry" type="button" hidden>重新加载边界</button>
+            </div>
+            <a id="detail-source" href="https://data.worldbank.org" target="_blank" rel="noreferrer">查看原始数据 ↗</a>
+          </div>
+        </aside>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

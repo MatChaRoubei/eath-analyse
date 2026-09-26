@@ -6,14 +6,22 @@
 
 ## 运行
 
-需要 Node.js 20.19+ 或 22.12+。构建完成后上传 `dist/` **里面的所有内容**到静态站点目录（例如 `earth-atlas/`），无需运行本地服务，也不会占用端口。
+**直接打开、无需本地端口：**双击项目根目录的 `index.html`。运行 `npm run build:offline` 可重新生成它。这是单文件版，内含 CSS、脚本、地球纹理、国界和已缓存的行政区边界；首次打开约 70 MB，可能需要等待数秒。世界银行指标及未缓存地区的边界仍需联网获取。
+
+需要重新生成单文件版时，使用 Node.js 20.19+ 或 22.12+：
 
 ```bash
 npm ci
+npm run build:offline
+```
+
+**部署到网站：**构建完成后上传 `dist/` **里面的所有内容**到静态站点目录（例如 `earth-atlas/`），无需运行本地服务，也不会占用端口。本仓库会在每次推送 `main` 后自动构建并发布 GitHub Pages。
+
+```bash
 npm run build
 ```
 
-`dist/index.html`、`dist/assets/`、`dist/data/` 和 `.nojekyll` 需要保持相对目录结构。页面通过网站的 HTTPS 地址访问；`file://` 直接打开可能被浏览器限制资源及 API 请求。
+项目源网页保存在 `app.html`。`dist/index.html`、`dist/assets/`、`dist/data/` 和 `.nojekyll` 需要保持相对目录结构。部署版通过网站的 HTTPS 地址访问；`dist/index.html` 不能直接双击。
 
 ## 数据
 
