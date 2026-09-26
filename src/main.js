@@ -5,24 +5,43 @@ import './style.css';
 import './enhancements.css';
 
 const metrics = [
-  { id:'gdp', icon:'◇', name:'人均 GDP', en:'GDP / CAPITA', code:'NY.GDP.PCAP.CD', unit:'美元', description:'按现价美元计算的人均国内生产总值。', min:0,max:300000,step:1000,default:20000,format:'money' },
-  { id:'life', icon:'♡', name:'预期寿命', en:'LIFE EXPECTANCY', code:'SP.DYN.LE00.IN', unit:'岁', description:'出生时预期寿命，男女合计。', min:40,max:90,step:1,default:75,format:'decimal' },
-  { id:'internet', icon:'⌁', name:'互联网普及', en:'INTERNET USERS', code:'IT.NET.USER.ZS', unit:'%', description:'使用互联网的人口占总人口的比例。', min:0,max:100,step:1,default:80,format:'percent' },
-  { id:'electricity', icon:'⚡', name:'电力覆盖', en:'ELECTRICITY', code:'EG.ELC.ACCS.ZS', unit:'%', description:'可以使用电力的人口比例。', min:0,max:100,step:1,default:95,format:'percent' },
-  { id:'renewable', icon:'☼', name:'可再生能源', en:'RENEWABLE ENERGY', code:'EG.FEC.RNEW.ZS', unit:'%', description:'可再生能源占终端能源消费的比例。', min:0,max:100,step:1,default:40,format:'percent' },
-  { id:'forest', icon:'♧', name:'森林覆盖', en:'FOREST AREA', code:'AG.LND.FRST.ZS', unit:'%', description:'森林面积占陆地面积的比例。', min:0,max:100,step:1,default:40,format:'percent' },
-  { id:'co2', icon:'◌', name:'人均碳排放', en:'CO₂ / CAPITA', code:'EN.GHG.CO2.PC.CE.AR5', unit:'吨', description:'人均二氧化碳排放量，不含土地利用与林业，单位为吨二氧化碳当量。', min:0,max:30,step:0.5,default:5,format:'decimal' },
-  { id:'population', icon:'♙', name:'人口规模', en:'POPULATION', code:'SP.POP.TOTL', unit:'人', description:'国家或地区的总人口。', min:0,max:1500000000,step:10000000,default:100000000,format:'population' },
-  { id:'growth', icon:'↗', name:'经济增长', en:'GDP GROWTH', code:'NY.GDP.MKTP.KD.ZG', unit:'%', description:'国内生产总值的年度实际增长率。', min:-10,max:20,step:0.5,default:3,format:'percent' },
-  { id:'unemployment', icon:'▤', name:'失业率', en:'UNEMPLOYMENT', code:'SL.UEM.TOTL.ZS', unit:'%', description:'劳动力中失业人口的比例，采用国际劳工组织估算。', min:0,max:35,step:0.5,default:5,format:'percent' },
-  { id:'urban', icon:'▦', name:'城市人口', en:'URBAN POPULATION', code:'SP.URB.TOTL.IN.ZS', unit:'%', description:'生活在城市地区的人口比例。', min:0,max:100,step:1,default:70,format:'percent' }
+  { id:'gdp', category:'经济', icon:'◇', name:'人均 GDP', en:'GDP / CAPITA', code:'NY.GDP.PCAP.CD', unit:'美元', description:'按现价美元计算的人均国内生产总值。', min:0,max:300000,step:1000,default:20000,format:'money' },
+  { id:'gdp-ppp', category:'经济', icon:'◈', name:'人均 GDP（购买力）', en:'GDP / CAPITA · PPP', code:'NY.GDP.PCAP.PP.KD', unit:'国际元', description:'按购买力平价和固定国际元计算的人均国内生产总值，更适合比较不同国家的实际购买力。', min:0,max:150000,step:1000,default:30000,format:'money' },
+  { id:'growth', category:'经济', icon:'↗', name:'经济增长', en:'GDP GROWTH', code:'NY.GDP.MKTP.KD.ZG', unit:'%', description:'国内生产总值的年度实际增长率。', min:-10,max:20,step:0.5,default:3,format:'percent' },
+  { id:'unemployment', category:'经济', icon:'▤', name:'失业率', en:'UNEMPLOYMENT', code:'SL.UEM.TOTL.ZS', unit:'%', description:'劳动力中失业人口的比例，采用国际劳工组织估算。', min:0,max:35,step:0.5,default:5,format:'percent' },
+  { id:'poverty', category:'经济', icon:'↓', name:'国际贫困线下人口', en:'POVERTY HEADCOUNT', code:'SI.POV.DDAY', unit:'%', description:'生活在世界银行国际贫困线以下的人口比例；贫困线的购买力平价基准可能随统计标准更新。', min:0,max:100,step:1,default:10,format:'percent' },
+  { id:'trade', category:'经济', icon:'⇄', name:'贸易占 GDP', en:'TRADE / GDP', code:'NE.TRD.GNFS.ZS', unit:'%', description:'货物和服务进出口总额占 GDP 的比例，用于观察经济开放度。', min:0,max:250,step:5,default:60,format:'percent' },
+  { id:'fdi', category:'经济', icon:'↗', name:'外商直接投资', en:'FDI INFLOWS / GDP', code:'BX.KLT.DINV.WD.GD.ZS', unit:'%', description:'外国直接投资净流入占 GDP 的比例；净流出年份可能为负值。', min:-20,max:30,step:0.5,default:3,format:'percent' },
+  { id:'population', category:'人口与健康', icon:'♙', name:'人口规模', en:'POPULATION', code:'SP.POP.TOTL', unit:'人', description:'国家或地区的总人口。', min:0,max:1500000000,step:10000000,default:100000000,format:'population' },
+  { id:'life', category:'人口与健康', icon:'♡', name:'预期寿命', en:'LIFE EXPECTANCY', code:'SP.DYN.LE00.IN', unit:'岁', description:'出生时预期寿命，男女合计。', min:40,max:90,step:1,default:75,format:'decimal' },
+  { id:'under5', category:'人口与健康', icon:'＋', name:'五岁以下儿童死亡率', en:'UNDER-5 MORTALITY', code:'SH.DYN.MORT', unit:'‰', description:'每 1,000 名活产婴儿中，未满五岁前死亡的概率估计值。', min:0,max:150,step:1,default:25,format:'decimal' },
+  { id:'infant', category:'人口与健康', icon:'＋', name:'婴儿死亡率', en:'INFANT MORTALITY', code:'SP.DYN.IMRT.IN', unit:'‰', description:'每 1,000 名活产婴儿中，一岁前死亡的人数估计值。', min:0,max:100,step:1,default:15,format:'decimal' },
+  { id:'immunization', category:'人口与健康', icon:'✚', name:'麻疹疫苗覆盖', en:'MEASLES IMMUNIZATION', code:'SH.IMM.MEAS', unit:'%', description:'12 至 23 月龄儿童接受麻疹疫苗接种的比例。', min:0,max:100,step:1,default:90,format:'percent' },
+  { id:'female-work', category:'人口与健康', icon:'◉', name:'女性劳动参与率', en:'FEMALE LABOR FORCE', code:'SL.TLF.CACT.FE.ZS', unit:'%', description:'女性劳动年龄人口中属于劳动力的人口比例。', min:0,max:100,step:1,default:60,format:'percent' },
+  { id:'urban', category:'人口与健康', icon:'▦', name:'城市人口', en:'URBAN POPULATION', code:'SP.URB.TOTL.IN.ZS', unit:'%', description:'生活在城市地区的人口比例。', min:0,max:100,step:1,default:70,format:'percent' },
+  { id:'internet', category:'数字与基础设施', icon:'⌁', name:'互联网普及', en:'INTERNET USERS', code:'IT.NET.USER.ZS', unit:'%', description:'使用互联网的人口占总人口的比例。', min:0,max:100,step:1,default:80,format:'percent' },
+  { id:'mobile', category:'数字与基础设施', icon:'▣', name:'移动通信订阅', en:'MOBILE SUBSCRIPTIONS', code:'IT.CEL.SETS.P2', unit:'每百人', description:'每 100 人拥有的移动蜂窝通信订阅数；一人可能有多个号码。', min:0,max:250,step:5,default:100,format:'decimal' },
+  { id:'broadband', category:'数字与基础设施', icon:'⌁', name:'固定宽带订阅', en:'FIXED BROADBAND', code:'IT.NET.BBND.P2', unit:'每百人', description:'每 100 人的固定宽带订阅数，不等同于家庭覆盖率。', min:0,max:60,step:1,default:25,format:'decimal' },
+  { id:'electricity', category:'数字与基础设施', icon:'⚡', name:'电力覆盖', en:'ELECTRICITY', code:'EG.ELC.ACCS.ZS', unit:'%', description:'可以使用电力的人口比例。', min:0,max:100,step:1,default:95,format:'percent' },
+  { id:'water', category:'数字与基础设施', icon:'≈', name:'基本饮用水服务', en:'BASIC DRINKING WATER', code:'SH.H2O.BASW.ZS', unit:'%', description:'可获得基本饮用水服务的人口比例。', min:0,max:100,step:1,default:95,format:'percent' },
+  { id:'sanitation', category:'数字与基础设施', icon:'≈', name:'基本卫生设施', en:'BASIC SANITATION', code:'SH.STA.BASS.ZS', unit:'%', description:'可获得基本卫生设施服务的人口比例。', min:0,max:100,step:1,default:90,format:'percent' },
+  { id:'renewable', category:'能源与环境', icon:'☼', name:'可再生能源', en:'RENEWABLE ENERGY', code:'EG.FEC.RNEW.ZS', unit:'%', description:'可再生能源占终端能源消费的比例。', min:0,max:100,step:1,default:40,format:'percent' },
+  { id:'co2', category:'能源与环境', icon:'◌', name:'人均碳排放', en:'CO₂ / CAPITA', code:'EN.GHG.CO2.PC.CE.AR5', unit:'吨', description:'人均二氧化碳排放量，不含土地利用与林业，单位为吨二氧化碳当量。', min:0,max:30,step:0.5,default:5,format:'decimal' },
+  { id:'air', category:'能源与环境', icon:'◌', name:'PM2.5 空气污染', en:'PM2.5 EXPOSURE', code:'EN.ATM.PM25.MC.M3', unit:'μg/m³', description:'人口加权的年均 PM2.5 暴露浓度。', min:0,max:100,step:1,default:15,format:'decimal' },
+  { id:'forest', category:'能源与环境', icon:'♧', name:'森林覆盖', en:'FOREST AREA', code:'AG.LND.FRST.ZS', unit:'%', description:'森林面积占陆地面积的比例。', min:0,max:100,step:1,default:40,format:'percent' },
+  { id:'farmland', category:'能源与环境', icon:'▧', name:'农业用地', en:'AGRICULTURAL LAND', code:'AG.LND.AGRI.ZS', unit:'%', description:'农业用地占陆地面积的比例。', min:0,max:100,step:1,default:40,format:'percent' },
+  { id:'research', category:'贸易与创新', icon:'⌬', name:'研发支出', en:'R&D EXPENDITURE', code:'GB.XPD.RSDV.GD.ZS', unit:'% GDP', description:'研究与试验发展支出占 GDP 的比例。', min:0,max:8,step:0.1,default:2,format:'percent' },
+  { id:'secondary-school', category:'贸易与创新', icon:'▤', name:'中学入学率', en:'SECONDARY ENROLLMENT', code:'SE.SEC.ENRR', unit:'%', description:'中学阶段毛入学率；可能超过 100%，不代表适龄人口净入学率。', min:0,max:150,step:2,default:90,format:'percent' }
 ];
 
 const presets = [
   {id:'prosperity',name:'富裕且长寿',primary:'gdp',threshold:20000,secondary:'life',secondaryThreshold:80,secondaryOp:'above'},
   {id:'digital',name:'数字生活普及',primary:'internet',threshold:80,secondary:'electricity',secondaryThreshold:95,secondaryOp:'above'},
   {id:'clean',name:'绿色能源与低排放',primary:'renewable',threshold:40,secondary:'co2',secondaryThreshold:5,secondaryOp:'below'},
-  {id:'jobs',name:'增长且低失业',primary:'growth',threshold:3,secondary:'unemployment',secondaryThreshold:6,secondaryOp:'below'}
+  {id:'jobs',name:'增长且低失业',primary:'growth',threshold:3,secondary:'unemployment',secondaryThreshold:6,secondaryOp:'below'},
+  {id:'basic-services',name:'基础服务普及',primary:'water',threshold:95,secondary:'sanitation',secondaryThreshold:90,secondaryOp:'above'},
+  {id:'clean-air',name:'空气更清洁',primary:'air',threshold:10,primaryOp:'below',secondary:'renewable',secondaryThreshold:30,secondaryOp:'above'},
+  {id:'research',name:'研发投入较高',primary:'research',threshold:2,secondary:'internet',secondaryThreshold:80,secondaryOp:'above'}
 ];
 const $ = s => document.querySelector(s);
 const asset = path => path==='earth-blue-marble.jpg' && window.__ATLAS_TEXTURE__
@@ -42,7 +61,7 @@ function indicatorRows(payload) {
   if(!Array.isArray(payload)||payload[0]?.message||(!Array.isArray(payload[1]) && Number(payload[0]?.total)!==0)) throw new Error('数据接口未返回有效结果');
   return payload[1]||[];
 }
-const state = { metric:metrics[0], threshold:metrics[0].default, operator:'above', year:'latest', secondaryEnabled:false, secondaryMetric:metrics[1], secondaryThreshold:80, secondaryOperator:'above', secondaryValues:new Map(), features:[], simpleFeatures:[], detailed:false, values:new Map(), cache:new Map(), selected:null, comparisons:[], globe:null, rotating:true, request:0, hover:null, activePreset:null, admin:{open:false,level:0,features:[],parentRegion:null,selectedIndex:-1,token:0,cache:new Map()} };
+const state = { metric:metrics[0], threshold:metrics[0].default, operator:'above', year:'latest', secondaryEnabled:false, secondaryMetric:metrics[1], secondaryThreshold:metrics[1].default, secondaryOperator:'above', secondaryValues:new Map(), features:[], simpleFeatures:[], detailed:false, values:new Map(), cache:new Map(), selected:null, comparisons:[], globe:null, rotating:true, request:0, hover:null, activePreset:null, admin:{open:false,level:0,features:[],parentRegion:null,selectedIndex:-1,token:0,cache:new Map()} };
 const zhNames = new Intl.DisplayNames(['zh-CN'],{type:'region'});
 const chinaRegionNames = {
   'Anhui Province':'安徽省','Beijing Municipality':'北京市','Chongqing Municipality':'重庆市','Fujian Province':'福建省','Gansu Province':'甘肃省','Guangxi Zhuang Autonomous Region':'广西壮族自治区','Guangzhou Province':'广东省','Guizhou Province':'贵州省','Hainan Province':'海南省','Hebei Province':'河北省','Heilongjiang Province':'黑龙江省','Henan Province':'河南省','Hong Kong Special Administrative Region':'香港特别行政区','Hubei Province':'湖北省','Hunan Province':'湖南省','Inner Mongolia Autonomous Region':'内蒙古自治区','Jiangsu Province':'江苏省','Jiangxi Province':'江西省','Jilin Province':'吉林省','Liaoning Province':'辽宁省','Macau Special Administrative Region':'澳门特别行政区','Ningxia Ningxia Hui Autonomous Region':'宁夏回族自治区','Qinghai Province':'青海省','Shaanxi Province':'陕西省','Shandong Province':'山东省','Shanghai Municipality':'上海市','Shanxi Province':'山西省','Sichuan Province':'四川省','Taiwan Province':'台湾省','Tianjin Municipality':'天津市','Tibet Autonomous Region':'西藏自治区','Xinjiang Uyghur Autonomous Region':'新疆维吾尔自治区','Yunnan Province':'云南省','Zhejiang Province':'浙江省'
@@ -68,9 +87,9 @@ function displayName(record, feature) {
 }
 function fmt(value, metric=state.metric, short=false) {
   if(value==null || !Number.isFinite(value)) return '暂无数据';
-  if(metric.format==='money') return '$'+(short&&Math.abs(value)>=10000?compact.format(value):number.format(Math.round(value)));
+  if(metric.format==='money') return (metric.unit==='国际元'?'Intl$':'$')+(short&&Math.abs(value)>=10000?compact.format(value):number.format(Math.round(value)));
   if(metric.format==='population') return compact.format(value);
-  return number.format(value)+(metric.format==='percent'?'%':metric.unit==='岁'?' 岁':metric.unit==='吨'?' 吨':'');
+  return number.format(value)+(metric.format==='percent'?'%':metric.unit==='岁'?' 岁':metric.unit==='吨'?' 吨':metric.unit==='‰'?'‰':metric.unit?` ${metric.unit}`:'');
 }
 function qualifies(value, code) {
   if(value==null || !(state.operator==='above'?value>=state.threshold:value<=state.threshold)) return false;
@@ -93,8 +112,11 @@ function refreshGlobe() {
   state.globe.polygonCapColor(colorFor).polygonAltitude(altitudeFor).polygonSideColor(f=>qualifies(recordFor(f)?.value,codeFor(f))?'#188f78':'#173343');
 }
 function renderMetrics() {
-  $('#metric-list').innerHTML=metrics.map(m=>`<button class="metric-button ${m.id===state.metric.id?'active':''}" data-metric="${m.id}" type="button"><span class="metric-icon">${m.icon}</span><span class="metric-name">${m.name}</span></button>`).join('');
-  $('#metric-count').textContent=`${metrics.length} 项`;
+  const query=$('#metric-search').value.trim().toLocaleLowerCase();
+  const category=$('#metric-category').value;
+  const visible=metrics.filter(m=>(category==='all'||m.category===category)&&(!query||`${m.name} ${m.en} ${m.description} ${m.category}`.toLocaleLowerCase().includes(query)));
+  $('#metric-list').innerHTML=visible.map(m=>`<button class="metric-button ${m.id===state.metric.id?'active':''}" data-metric="${m.id}" type="button" title="${m.description}"><span class="metric-icon">${m.icon}</span><span class="metric-name">${m.name}</span></button>`).join('')||'<div class="metric-empty">没有匹配的指标</div>';
+  $('#metric-count').textContent=query||category!=='all'?`${visible.length} / ${metrics.length} 项`:`${metrics.length} 项`;
 }
 function renderMetricHeader() {
   const m=state.metric;
@@ -589,17 +611,19 @@ function applyPreset(preset) {
   state.activePreset=preset.id;
   state.metric=metrics.find(m=>m.id===preset.primary);
   state.threshold=preset.threshold;
-  state.operator='above';
+  state.operator=preset.primaryOp||'above';
   state.secondaryEnabled=true;
   state.secondaryMetric=metrics.find(m=>m.id===preset.secondary);
   state.secondaryThreshold=preset.secondaryThreshold;
   state.secondaryOperator=preset.secondaryOp;
-  $('#op-above').classList.add('active'); $('#op-below').classList.remove('active');
+  $('#op-above').classList.toggle('active',state.operator==='above'); $('#op-below').classList.toggle('active',state.operator==='below');
   renderMetricHeader(); renderExtras(); loadMetric();
 }
 function bind() {
   $('#preset-list').addEventListener('click',e=>{const button=e.target.closest('[data-preset]');if(button)applyPreset(presets.find(p=>p.id===button.dataset.preset));});
   $('#metric-list').addEventListener('click',e=>{const button=e.target.closest('[data-metric]');if(!button)return;const m=metrics.find(x=>x.id===button.dataset.metric);if(!m||m===state.metric)return;state.activePreset=null;state.metric=m;state.threshold=m.default;renderMetricHeader();renderExtras();loadMetric();});
+  $('#metric-search').addEventListener('input',renderMetrics);
+  $('#metric-category').addEventListener('change',renderMetrics);
   $('#year-select').addEventListener('change',e=>{state.year=e.target.value;loadMetric();});
   $('#secondary-enabled').addEventListener('change',e=>{state.secondaryEnabled=e.target.checked;state.activePreset=null;renderExtras();loadMetric();});
   $('#secondary-metric').addEventListener('change',e=>{state.secondaryMetric=metrics.find(m=>m.id===e.target.value);state.secondaryThreshold=state.secondaryMetric.default;state.activePreset=null;renderExtras();loadMetric();});
@@ -651,3 +675,4 @@ async function main() {
   } catch(error) { $('#loading span').textContent=`地球加载失败：${error.message}`; $('#update-label').textContent='地图加载失败'; }
 }
 main();
+

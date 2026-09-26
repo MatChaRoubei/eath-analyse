@@ -7,6 +7,8 @@ const htmlFile = join(dist, 'index.html');
 try { await readFile(htmlFile); }
 catch { await rename(join(dist, 'app.html'), htmlFile); }
 const html = await readFile(htmlFile, 'utf8');
+const icon = (await readFile(join(dist, 'atlas-icon.svg'), 'utf8')).trim();
+const iconDataUri = `data:image/svg+xml,${encodeURIComponent(icon)}`;
 const scriptMatch = html.match(/<script type="module" crossorigin src="\.\/assets\/([^"]+)"><\/script>/);
 const cssMatch = html.match(/<link rel="stylesheet" crossorigin href="\.\/assets\/([^"]+)">/);
 if (!scriptMatch || !cssMatch) throw new Error('找不到打包后的脚本或样式');
@@ -59,6 +61,7 @@ window.fetch = (input, options) => {
 const offline = html
   .replace(scriptMatch[0], '')
   .replace(cssMatch[0], `<style>${css}</style>`)
+  .replace('href="./atlas-icon.svg"', `href="${iconDataUri}"`)
   .replace(/<a href="data\/SOURCES\.md"[^>]*>来源与许可 ↗<\/a> · /, '')
   .replace('</body>', `${embeddedData.join('\n')}\n${bootstrap}\n<script>${js}</script>\n</body>`);
 

@@ -2,7 +2,7 @@
 
 交互式 3D 地球数据网页。拖动旋转、滚轮或按钮缩放；选择指标与自定义门槛后，地图会高亮符合条件的国家和地区。点击地图或列表可定位并查看该指标的历史趋势。
 
-现在可选择 2000—2025 年的具体年份，或查看各地最近一个有值的年份；可用两个指标同时筛选，并用四个快速提问直接开始分析。最多将四个国家加入对比。选中一个国家后，点击地图右上角的「▧」可按需加载该国的 1:10m 精细边界。精细边界只增加海岸线和国界的形状细节，不会产生省市级统计值。
+现在可选择 2000—2025 年的具体年份，或查看各地最近一个有值的年份；可用两个指标同时筛选，并用七个快速提问直接开始分析。27 项指标涵盖经济、人口与健康、数字与基础设施、能源与环境、贸易与创新，可按分类浏览或搜索。最多将四个国家加入对比。选中一个国家后，点击地图右上角的「▧」可按需加载该国的 1:10m 精细边界。精细边界只增加海岸线和国界的形状细节，不会产生省市级统计值。
 
 ## 运行
 
@@ -27,7 +27,7 @@ npm run build
 
 ## 数据
 
-- 11 项指标及历年趋势： [世界银行开放数据 API v2](https://datahelpdesk.worldbank.org/knowledgebase/articles/898581)。网页在线获取每个国家或地区最近一个有值的年份，因此年份可能不同。
+- 27 项指标及历年趋势： [世界银行开放数据 API v2](https://datahelpdesk.worldbank.org/knowledgebase/articles/898581)。网页在线获取每个国家或地区最近一个有值的年份，因此年份可能不同；指标覆盖率也不相同。国际贫困线指标采用世界银行 API 当前提供的 $3.00 / 日、2021 年购买力平价口径。
 - 普通国界： [Natural Earth 1:50m GeoJSON](https://github.com/nvkelso/natural-earth-vector/tree/master/geojson)，随项目保存在 `public/data/countries.geojson`。
 - 精细国界： [world-atlas 1:10m TopoJSON](https://github.com/topojson/world-atlas)，随项目保存在 `public/data/countries-10m.json`，仅在用户请求时加载所选国家。
 - 地球纹理： [three-globe 示例资源](https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg)，随项目保存在 `public/data/earth-blue-marble.jpg`。
